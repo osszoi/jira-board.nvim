@@ -44,28 +44,6 @@ A beautiful Neovim plugin for browsing and managing Jira issues with a Telescope
 }
 ```
 
-### Local Development
-
-For testing locally before pushing to GitHub:
-
-```lua
-{
-  "jira-board-nvim",
-  dir = "~/Work/personal/jira-board-nvim",
-  dependencies = {
-    "nvim-telescope/telescope.nvim",
-  },
-  config = function()
-    require("jira-board").setup({
-      onlyActiveSprints = true, -- filter to current sprint by default
-      jira_command = "jira", -- default jira-cli command
-      path_commands = {}, -- path-based command mapping
-      require_path_match = false, -- allow fallback to jira_command when no path matches
-    })
-  end,
-}
-```
-
 ## 🚀 Usage
 
 ### Basic Usage
