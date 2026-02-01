@@ -197,42 +197,18 @@ local function parse_adf_text(content, indent)
 end
 
 local function get_type_config(issue_type)
-  local types = {
-    Bug = { icon = "", fg = "#f87171", bg = "#450a0a" },
-    Story = { icon = "", fg = "#4ade80", bg = "#052e16" },
-    Task = { icon = "", fg = "#60a5fa", bg = "#172554" },
-    Epic = { icon = "", fg = "#c084fc", bg = "#2e1065" },
-    ["Sub-task"] = { icon = "", fg = "#94a3b8", bg = "#1e293b" },
-  }
-  return types[issue_type] or { icon = "", fg = "#94a3b8", bg = "#1e293b" }
+  local config = require("jira-board").config
+  return config.type_configs[issue_type] or { icon = "", fg = "#94a3b8", bg = "#1e293b" }
 end
 
 local function get_priority_config(priority)
-  local configs = {
-    Highest = { icon = "󰀪", fg = "#dc2626", label = "CRITICAL" },
-    Critical = { icon = "󰀪", fg = "#dc2626", label = "CRITICAL" },
-    High = { icon = "", fg = "#ef4444", label = "HIGH" },
-    Medium = { icon = "", fg = "#eab308", label = "MEDIUM" },
-    Low = { icon = "", fg = "#60a5fa", label = "LOW" },
-    Lowest = { icon = "", fg = "#94a3b8", label = "LOWEST" },
-  }
-  return configs[priority] or { icon = "", fg = "#94a3b8", label = priority or "NONE" }
+  local config = require("jira-board").config
+  return config.priority_configs[priority] or { icon = "", fg = "#94a3b8", label = priority or "NONE" }
 end
 
 local function get_status_config(status)
-  local configs = {
-    Open = { icon = "", fg = "#94a3b8" },
-    ["To Do"] = { icon = "", fg = "#94a3b8" },
-    ["In Progress"] = { icon = "", fg = "#60a5fa" },
-    ["In Review"] = { icon = "", fg = "#3b82f6" },
-    ["Code Review"] = { icon = "", fg = "#3b82f6" },
-    ["Ready in dev"] = { icon = "", fg = "#22c55e" },
-    Done = { icon = "", fg = "#22c55e" },
-    Approved = { icon = "", fg = "#22c55e" },
-    Deployed = { icon = "", fg = "#22c55e" },
-    Closed = { icon = "", fg = "#22c55e" },
-  }
-  return configs[status] or { icon = "", fg = "#94a3b8" }
+  local config = require("jira-board").config
+  return config.status_configs[status] or { icon = "", fg = "#94a3b8" }
 end
 
 local function format_description(issue)
@@ -315,39 +291,25 @@ local function format_description(issue)
 end
 
 local function setup_highlights()
+  local config = require("jira-board").config
+
   vim.api.nvim_set_hl(0, "JiraBoardKey", { fg = "#38bdf8", bold = true })
   vim.api.nvim_set_hl(0, "JiraBoardTitle", { fg = "#f8fafc", bold = true })
   vim.api.nvim_set_hl(0, "JiraBoardLabels", { fg = "#cbd5e1", bg = "#334155", italic = true })
   vim.api.nvim_set_hl(0, "JiraBoardAssignee", { fg = "#c084fc", italic = true })
 
-  local types = { "Bug", "Story", "Task", "Epic", "Subtask" }
-  for _, type_name in ipairs(types) do
-    local config = get_type_config(type_name)
-    vim.api.nvim_set_hl(0, "JiraBoardType" .. type_name, { fg = config.fg, bold = true })
+  for type_name, type_config in pairs(config.type_configs) do
+    local hl_name = "JiraBoardType" .. type_name:gsub("[^%w]", "")
+    vim.api.nvim_set_hl(0, hl_name, { fg = type_config.fg, bold = true })
   end
 
-  local priorities = { "Highest", "Critical", "High", "Medium", "Low", "Lowest", "None" }
-  for _, priority in ipairs(priorities) do
-    local config = get_priority_config(priority)
-    vim.api.nvim_set_hl(0, "JiraBoardPriority" .. priority, { fg = config.fg, bold = true })
+  for priority, priority_config in pairs(config.priority_configs) do
+    vim.api.nvim_set_hl(0, "JiraBoardPriority" .. priority, { fg = priority_config.fg, bold = true })
   end
 
-  local statuses = {
-    "Open",
-    "ToDo",
-    "InProgress",
-    "InReview",
-    "CodeReview",
-    "Readyindev",
-    "Done",
-    "Approved",
-    "Deployed",
-    "Closed",
-    "Unknown",
-  }
-  for _, status in ipairs(statuses) do
-    local config = get_status_config(status:gsub("([a-z])([A-Z])", "%1 %2"))
-    vim.api.nvim_set_hl(0, "JiraBoardStatus" .. status, { fg = config.fg, bold = true })
+  for status, status_config in pairs(config.status_configs) do
+    local hl_name = "JiraBoardStatus" .. status:gsub(" ", "")
+    vim.api.nvim_set_hl(0, hl_name, { fg = status_config.fg, bold = true })
   end
 end
 

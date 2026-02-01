@@ -215,6 +215,9 @@ require("jira-board").setup({
 | `jira_command` | string | `"jira"` | Default jira-cli command to use. This is used when no path pattern matches or when `require_path_match` is `false`. |
 | `path_commands` | table | `{}` | Map of directory path patterns to jira commands. Supports pattern matching and tilde expansion. When multiple patterns match, the longest match wins. |
 | `require_path_match` | boolean | `false` | When `true`, only run jira commands when current directory matches a pattern in `path_commands`. When `false`, falls back to `jira_command` if no pattern matches. |
+| `type_configs` | table | See defaults | Customize issue type icons and colors. Keys are type names (e.g., "Bug", "Story"). |
+| `priority_configs` | table | See defaults | Customize priority icons, colors, and labels. Keys are priority names (e.g., "High", "Medium"). |
+| `status_configs` | table | See defaults | Customize status icons and colors. Keys are status names (e.g., "In Progress", "Done"). |
 
 **Note:** When `onlyActiveSprints` is `true`, all calls to `:JiraBoard` will automatically include `sprint=current` unless you explicitly pass `sprint=false`.
 
@@ -231,6 +234,35 @@ path_commands = {
 ```
 
 When you run `:JiraBoard` from `~/Work/company-a/project`, it will use `jira-company-a`. From `~/personal/my-project`, it will use `jira-personal`. If no pattern matches and `require_path_match` is `false`, it falls back to the global `jira_command`.
+
+### Visual Customization
+
+You can customize the appearance of issue types, priorities, and statuses:
+
+```lua
+require("jira-board").setup({
+  type_configs = {
+    Bug = { icon = "", fg = "#f87171", bg = "#450a0a" },
+    Story = { icon = "", fg = "#4ade80", bg = "#052e16" },
+    Task = { icon = "", fg = "#60a5fa", bg = "#172554" },
+    -- Add or override any issue types
+  },
+  priority_configs = {
+    Highest = { icon = "󰀪", fg = "#dc2626", label = "CRITICAL" },
+    High = { icon = "", fg = "#ef4444", label = "HIGH" },
+    Medium = { icon = "", fg = "#eab308", label = "MEDIUM" },
+    -- Add or override any priorities
+  },
+  status_configs = {
+    ["To Do"] = { icon = "", fg = "#94a3b8" },
+    ["In Progress"] = { icon = "", fg = "#60a5fa" },
+    Done = { icon = "", fg = "#22c55e" },
+    -- Add or override any statuses
+  },
+})
+```
+
+**Note:** You only need to specify the items you want to customize. Unspecified items will use the defaults.
 
 ## 🎯 Search Functionality
 
